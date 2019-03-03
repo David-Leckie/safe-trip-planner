@@ -1,5 +1,5 @@
-{
-  "name": "safe_web_app_quick_start",
+i{
+  "name": "safe-trip-planner",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/maidsafe/safe_examples"
+    "url": "https://github.com/David-Leckie"
   },
   "dependencies": {
     "@babel/helper-module-imports": "^7.0.0-beta.44",
