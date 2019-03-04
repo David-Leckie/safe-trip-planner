@@ -9,9 +9,21 @@ async function authoriseAndConnect() {
   };
   safeApp = await window.safe.initialiseApp(appInfo);
   console.log('Authorising SAFE application...');
+
+  const containerPermissions = {
+    _public: [
+      'Read',
+      'Insert',
+      'Update',
+      'Delete'
+    ]
+  };
+  const authorisationOptions = {own_container: true};
+  
   const authReqUri = await safeApp.auth.genAuthUri(
-    {_public: ['Read','Insert','Update','Delete']},
-    {own_container: true});
+    containerPermissions,
+    authorisationOptions
+  );
   const authUri = await window.safe.authorise(authReqUri);
   console.log('SAFE application authorised by user');
   await safeApp.auth.loginFromUri(authUri);
@@ -26,9 +38,9 @@ async function checkForMutableData() {
     let selectedMD = await ownContainer.get(keyName);
     return selectedMD;
   }
-    catch (err) { 
-      return false
-    }
+  catch (err) { 
+    return false
+  }
 }
 
 let storedNameAndTag;
@@ -36,18 +48,18 @@ let storedNameAndTag;
 async function getMutableDataAddress() {
   if (await checkForMutableData() == false) {
     console.log("Creating MutableData with initial dataset...");
-      const typeTag = 15000;
-      md = await safeApp.mutableData.newRandomPublic(typeTag);
-      const initialData = {
-        "random_key_1": JSON.stringify({
-            text: 'Scotland to try Scotch whisky',
-            made: false,
-          }),
-        "random_key_2": JSON.stringify({
-            text: 'Patagonia before I\'m too old',
-            made: false,
-          })
-      };
+    const typeTag = 15000;
+    md = await safeApp.mutableData.newRandomPublic(typeTag);
+    const initialData = {
+      "random_key_1": JSON.stringify({
+          text: 'Scotland to try Scotch whisky',
+          made: false,
+      }),
+      "random_key_2": JSON.stringify({
+          text: 'Patagonia before I\'m too old',
+          made: false,
+        })
+    };
     await md.quickSetup(initialData);
     let nameAndTag = await md.getNameAndTag();
     const entryKey = 'storedMD1'
@@ -57,16 +69,16 @@ async function getMutableDataAddress() {
     const storedNameAndTag = await ownContainer.get(entryKey);
     return storedNameAndTag;
   }
-
   else {
     let keyName = 'storedMD1';
     let selectedMD = await ownContainer.get(keyName);
     const value = selectedMD;
-      const storedNameAndTag = JSON.parse(value.buf); 
+    const storedNameAndTag = JSON.parse(value.buf); 
     return storedNameAndTag;
   }
 
 }
+
 
 async function linkToMutableData() {
   let storedNameAndTag = await getMutableDataAddress();
@@ -88,8 +100,8 @@ async function getItems() {
 };
 
 async function getSelectedEntryVersion(radioKey) {
-    let selectedEntry = await linkedMD.get(radioKey); 
-    return selectedEntry.version
+  let selectedEntry = await linkedMD.get(radioKey); 
+  return selectedEntry.version
 };
 
 async function insertItem(key, value) {
