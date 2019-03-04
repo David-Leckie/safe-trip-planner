@@ -6,15 +6,12 @@
       return {tripText: '', trips: [], newText: [],}
     },
     methods: {
-
       refreshList: async function() {
         this.trips = await safenetwork.getItems();
       },
-
       textChange: async function(typing) {
         this.newText = await typing;
       },
-
       addTrip: async function() {
         const randomNumber = Math.floor((Math.random() * 10000) + 1);
         const randomKey = randomNumber.toString();
@@ -22,55 +19,52 @@
         this.newText = [];
         await this.refreshList();
       },
-
       selectTrip: async function(radioTrip) {
         if (this.newText == true) {
           if (confirm("Discard Changes?") == true) {
-          this.newText = [];
-          this.radioKey = await radioTrip.key;
-          this.tripText = await radioTrip.value.text;
+            this.newText = [];
+            this.radioKey = await radioTrip.key;
+            this.tripText = await radioTrip.value.text;
           }
           else {
             return;
-            }  
-          }
+          }  
+        }
         else {
-        this.radioKey = await radioTrip.key;
-        this.tripText = await radioTrip.value.text;
+          this.radioKey = await radioTrip.key;
+          this.tripText = await radioTrip.value.text;
         }
       },
-
       editTrip: async function() {
         try {
-        this.selectedVersion = await safenetwork.getSelectedEntryVersion(this.radioKey);
-        await safenetwork.updateItem(this.radioKey, {text: this.tripText, made: false}, this.selectedVersion);
-        let savedMessage = document.getElementById("savedMessage");
-        savedMessage.className = "show";
-        setTimeout(function(){ savedMessage.className = savedMessage.className.replace("show", ""); },1200);
-        this.newText = [];
+          this.selectedVersion = await safenetwork.getSelectedEntryVersion(this.radioKey);
+          await safenetwork.updateItem(this.radioKey, {text: this.tripText, made: false}, this.selectedVersion);
+          let savedMessage = document.getElementById("savedMessage");
+          savedMessage.className = "show";
+          setTimeout(function(){ savedMessage.className = savedMessage.className.replace("show", ""); },1200);
+          this.newText = [];
         }
-        catch (err)
-        {alert ("No Trip Selected!\n\nAdd New Trip or Select From List...\n")}
+        catch (err) {
+          alert ("No Trip Selected!\n\nAdd New Trip or Select From List...\n")
+        }
         await this.refreshList();
       },
-
-      clearTextBox: async function()  {
+      clearTextBox: async function() {
         if (this.newText == true) {
-         if (confirm ("Discard Changes?")==true) {
-          this.newText = [];
-          this.radioKey = '';
-          this.tripText = '';
-         }
-         else {
-           return;
-         }
+          if (confirm ("Discard Changes?")==true) {
+            this.newText = [];
+            this.radioKey = '';
+            this.tripText = '';
+           }
+           else {
+             return;
+           }
         }
         else {
-        this.radioKey = '';
-        this.tripText = '';
+          this.radioKey = '';
+          this.tripText = '';
         }
       },
-
       remaining: function() {
         var count = 0;
         this.trips.forEach((trip) => {
@@ -78,20 +72,19 @@
         });
         return count;
       },
-
       remove: async function() {
         let tripsToRemove = []
         await this.trips.forEach(async (trip) => {
-          if (trip.value.made) tripsToRemove.push({ key: trip.key, version: trip.version });
+          if (trip.value.made) {
+            tripsToRemove.push({ key: trip.key, version: trip.version });
+          }
         });
-
         if (tripsToRemove.length > 0) {
           await safenetwork.deleteItems(tripsToRemove);
           await this.refreshList();
         }
       }
     },
-
     async created() {
       await safenetwork.authoriseAndConnect();
       await safenetwork.checkForMutableData();
@@ -100,7 +93,6 @@
       await this.refreshList();
     }
   };
-
   
 </script>
 
@@ -121,7 +113,7 @@
 <template>
   <div :class="$style.App">
     <h1>Hello SAFE Network!</h1>
-    <h2>Trip Planner</h2>
+    <h2>Davids Trip Planner</h2>
     <div>
       <span>{{remaining()}} of {{trips.length}} trips remaining</span>
       [ <a href="" v-on:click.prevent="remove">Delete Selected Trips</a> ]
